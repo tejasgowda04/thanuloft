@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanu Loft - Premium Racing Content</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary: #3a5683;
+            --secondary: #1e4d6b;
+            --accent: #ff6b45;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-img {
+            height: 60px;
+            width: auto;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background: #ff5a35;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1606755456206-b25206b30b15?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+        
+        .hero h2 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            opacity: 0.9;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            padding: 5rem 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Results Section */
+        .results-section {
+            padding: 5rem 0;
+            background-color: #f8f9fa;
+        }
+        
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .results-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+        
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+        }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .results-table th, .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .results-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .results-table tr:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .download-btn {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        /* Premium Section */
+        .premium-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: 1;
+        }
+        
+        .premium-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .premium-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+        
+        .premium-text p {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .premium-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .premium-features li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .premium-features i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .premium-plans {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .premium-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            color: var(--dark);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--accent), #ff9a5f);
+        }
+        
+        .premium-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .price span {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #666;
+        }
+        
+        .premium-card ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .premium-card li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .premium-card i {
+            color: var(--success);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .recommended-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Gallery Section */
+        .gallery-section {
+            padding: 5rem 0;
+            background-color: white;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            height: 250px;
+            transform-style: preserve-3d;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03) rotateY(5deg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+        
+        .gallery-overlay h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .gallery-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .premium-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Resources Section */
+        .resources-section {
+            padding: 5rem 0;
+            background-color: #f8f9fa;
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .resource-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .resource-thumbnail {
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resource-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .resource-content {
+            padding: 1.5rem;
+        }
+        
+        .resource-content h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .resource-content p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent);
+        }
+        
+        .footer-column p {
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: white;
+            opacity: 0.7;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .footer-links i {
+            font-size: 0.8rem;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            margin-top: 1.5rem;
+        }
+        
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            font-family: inherit;
+        }
+        
+        .newsletter-form button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .newsletter-form button:hover {
+            background: #ff5a35;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            position: relative;
+            transform: scale(0.9);
+            animation: modalOpen 0.3s ease forwards;
+        }
+        
+        @keyframes modalOpen {
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent);
+            transform: rotate(90deg);
+        }
+        
+        .modal h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .user-premium {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .premium-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .premium-plans {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h2 {
+                font-size: 2.8rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="C:\Users\tejup\Downloads\Untitled design-modified.png" alt="Thanu Loft" class="logo-img">
+                <div class="logo-text">
+                    <h1>Thanu Loft</h1>
+                    <p>Mandya Homing Pigeon Society-[MHPS] </p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#stats">Statistics</a></li>
+                    <li><a href="#results">Race Results</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                    <li><a href="#premium">Premium</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <div id="userProfile" class="user-profile" style="display: none;">
+                    <img id="userAvatar" class="user-avatar" src="" alt="User">
+                    <div>
+                        <div id="userName" class="user-name"></div>
+                        <div id="userPremium" class="user-premium" style="display: none;">Premium Member</div>
+                    </div>
+                </div>
+                <button class="btn btn-outline" id="loginBtn">Login</button>
+                <button class="btn btn-accent" id="registerBtn">Register</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Master the Art of Pigeon Racing</h2>
+            <p>Access exclusive training content, race analytics, and breeding insights from championship-winning pigeon racers.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-accent" id="heroPremiumBtn">Premium Access</a></button>
+                <button class="btn btn-outline">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="section-title">
+            <h2>Club Statistics</h2>
+            <p>Performance metrics from our championship racing pigeons</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>15</h3>
+                <p>Championship Wins</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <h3>1,120km</h3>
+                <p>Longest Distance</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+                <h3>73km/h</h3>
+                <p>Top Speed</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dove"></i>
+                </div>
+                <h3>90%</h3>
+                <p>Return Rate</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section" id="results">
+        <div class="section-title">
+            <h2>Race Results</h2>
+            <p>Detailed performance data from our recent competitions</p>
+        </div>
+        <div class="results-container">
+            <div class="results-tabs">
+                <button class="tab-btn active" data-tab="2023">2023 Season</button>
+                <button class="tab-btn" data-tab="2022">2022 Season</button>
+                <button class="tab-btn" data-tab="breeding">Breeding Stats</button>
+            </div>
+            
+            <div class="tab-content active" id="2023">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Race Date</th>
+                            <th>Event</th>
+                            <th>Distance</th>
+                            <th>Position</th>
+                            <th>Speed</th>
+                            <th>Download</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>18/06/2023</td>
+                            <td>National Championship</td>
+                            <td>750km</td>
+                            <td>1st</td>
+                            <td>85.2 km/h</td>
+                            <td><a href="#" class="download-btn premium-download"><i class="fas fa-file-excel"></i> Excel</a></td>
+                        </tr>
+                        <tr>
+                            <td>25/05/2023</td>
+                            <td>Regional Classic</td>
+                            <td>500km</td>
+                            <td>2nd</td>
+                            <td>80.5 km/h</td>
+                            <td><a href="#" class="download-btn premium-download"><i class="fas fa-file-pdf"></i> PDF</a></td>
+                        </tr>
+                        <tr>
+                            <td>12/04/2023</td>
+                            <td>Spring Sprint</td>
+                            <td>350km</td>
+                            <td>1st</td>
+                            <td>88.1 km/h</td>
+                            <td><a href="#" class="download-btn"><i class="fas fa-file-excel"></i> Excel</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="2022">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Race Date</th>
+                            <th>Event</th>
+                            <th>Distance</th>
+                            <th>Position</th>
+                            <th>Speed</th>
+                            <th>Download</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>20/06/2022</td>
+                            <td>National Championship</td>
+                            <td>750km</td>
+                            <td>3rd</td>
+                            <td>81.8 km/h</td>
+                            <td><a href="#" class="download-btn premium-download"><i class="fas fa-file-excel"></i> Excel</a></td>
+                        </tr>
+                        <tr>
+                            <td>18/05/2022</td>
+                            <td>Regional Classic</td>
+                            <td>500km</td>
+                            <td>1st</td>
+                            <td>83.2 km/h</td>
+                            <td><a href="#" class="download-btn premium-download"><i class="fas fa-file-pdf"></i> PDF</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="breeding">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Pair ID</th>
+                            <th>Offspring Count</th>
+                            <th>Race Wins</th>
+                            <th>Avg Speed</th>
+                            <th>Return Rate</th>
+                            <th>Pedigree</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PM-301</td>
+                            <td>22</td>
+                            <td>9</td>
+                            <td>82.4 km/h</td>
+                            <td>98%</td>
+                            <td><a href="#" class="download-btn premium-download"><i class="fas fa-file-pdf"></i> PDF</a></td>
+                        </tr>
+                        <tr>
+                            <td>PM-287</td>
+                            <td>18</td>
+                            <td>6</td>
+                            <td>80.8 km/h</td>
+                            <td>97%</td>
+                            <td><a href="#" class="download-btn premium-download"><i class="fas fa-file-pdf"></i> PDF</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="resources-section" id="resources">
+        <div class="section-title">
+            <h2>Training Resources</h2>
+            <p>Educational materials to improve your racing performance</p>
+        </div>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <div class="resource-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1606755456398-5a9c0b0a1275?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Training Guide">
+                </div>
+                <div class="resource-content">
+                    <h3>Beginner's Training Guide</h3>
+                    <p>Essential training techniques for new pigeon racers to build endurance and speed.</p>
+                    <div class="resource-meta">
+                        <span><i class="fas fa-file-pdf"></i> PDF</span>
+                        <span>Free</span>
+                    </div>
+                </div>
+            </div>
+            <div class="resource-card premium-resource">
+                <div class="resource-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1606755456391-bad8c4fb1d1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Advanced Nutrition">
+                    <div class="premium-badge">Premium</div>
+                </div>
+                <div class="resource-content">
+                    <h3>Advanced Nutrition Plan</h3>
+                    <p>Optimize your pigeons' diet for peak performance during racing season.</p>
+                    <div class="resource-meta">
+                        <span><i class="fas fa-file-pdf"></i> PDF</span>
+                        <span>Premium</span>
+                    </div>
+                </div>
+            </div>
+            <div class="resource-card">
+                <div class="resource-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1606755456206-b25206b30b15?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Loft Design">
+                </div>
+                <div class="resource-content">
+                    <h3>Loft Design Handbook</h3>
+                    <p>Best practices for designing an efficient and healthy pigeon loft.</p>
+                    <div class="resource-meta">
+                        <span><i class="fas fa-file-pdf"></i> PDF</span>
+                        <span>Free</span>
+                    </div>
+                </div>
+            </div>
+            <div class="resource-card premium-resource">
+                <div class="resource-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1605296830714-7b3443c7fe32?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Race Analysis">
+                    <div class="premium-badge">Premium</div>
+                </div>
+                <div class="resource-content">
+                    <h3>Race Analysis Videos</h3>
+                    <p>Detailed breakdowns of championship races with expert commentary.</p>
+                    <div class="resource-meta">
+                        <span><i class="fas fa-video"></i> Video Series</span>
+                        <span>Premium</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Premium Section -->
+    <section class="premium-section" id="premium">
+        <div class="premium-content">
+            <div class="premium-text">
+                <h2>Unlock Premium Racing Content</h2>
+                <p>Subscribe to access our complete library of training videos, race analytics, and exclusive breeding insights from championship-winning pigeons.</p>
+                <ul class="premium-features">
+                    <li><i class="fas fa-check-circle"></i> Full race video recordings with analysis</li>
+                    <li><i class="fas fa-check-circle"></i> Advanced training methodology guides</li>
+                    <li><i class="fas fa-check-circle"></i> Detailed pedigree and bloodline reports</li>
+                    <li><i class="fas fa-check-circle"></i> Monthly breeding performance updates</li>
+                    <li><i class="fas fa-check-circle"></i> Live Q&A sessions with experts</li>
+                    <li><i class="fas fa-check-circle"></i> Downloadable race data (Excel/PDF)</li>
+                </ul>
+            </div>
+            <div class="premium-plans">
+                <div class="premium-card">
+                    <h3>Monthly Plan</h3>
+                    <div class="price">₹199<span>/month</span></div>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Full video library access</li>
+                        <li><i class="fas fa-check"></i> Downloadable resources</li>
+                        <li><i class="fas fa-check"></i> Email support</li>
+                        <li><i class="fas fa-check"></i> Cancel anytime</li>
+                    </ul>
+                    <!-- Replace with your actual Razorpay button ID -->
+                   
+                    <form>
+                        <script src="https://checkout.razorpay.com/v1/payment-button.js"
+                         data-payment_button_id="pl_QK9RgCBekubFEm" async> 
+                        </script> 
+                    </form>
+                </div>
+                <div class="premium-card">
+                    <div class="recommended-badge">Best Value</div>
+                    <h3>Yearly Plan</h3>
+                    <div class="price">₹599<span>/year</span></div>
+                    <p style="color: var(--accent); font-weight: 600; margin-bottom: 1rem;">Save 30%</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Everything in Monthly</li>
+                        <li><i class="fas fa-check"></i> Priority support</li>
+                        <li><i class="fas fa-check"></i> Exclusive webinars</li>
+                        <li><i class="fas fa-check"></i> Free annual guide</li>
+                    </ul>
+                    <!-- Replace with your actual Razorpay button ID -->
+                    <form>
+                        <script src="https://checkout.razorpay.com/v1/payment-button.js" 
+                        data-payment_button_id="pl_QLPkOm9okeKy3E" async>
+                         </script>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Gallery Section -->
+    <section class="gallery-section" id="gallery">
+        <div class="section-title">
+            <h2>Race Gallery</h2>
+            <p>Capturing the beauty and speed of our champion pigeons</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="C:\Users\tejup\Downloads\pexels-satria-bagaskara-1642070.jpg" alt="Pigeon in flight">
+                <div class="gallery-overlay">
+                    <h3>National Championship</h3>
+                    <p>1st Place - 750km</p>
+                </div>
+            </div>
+            <div class="gallery-item premium-gallery">
+                <img src="C:\Users\tejup\Downloads\pexels-danne-516541.jpg" alt="Pigeon loft">
+                <div class="gallery-overlay">
+                    <h3>Our Training Facility</h3>
+                    <p>State-of-the-art loft</p>
+                </div>
+                <div class="premium-badge">Premium</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1605296830714-7b3443c7fe32?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pigeon release">
+                <div class="gallery-overlay">
+                    <h3>Mass Liberation</h3>
+                    <p>Regional Classic start</p>
+                </div>
+            </div>
+            <div class="gallery-item premium-gallery">
+                <img src="https://images.unsplash.com/photo-1606755456398-5a9c0b0a1275?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pigeon closeup">
+                <div class="gallery-overlay">
+                    <h3>Champion Bloodline</h3>
+                    <p>PM-301 offspring</p>
+                </div>
+                <div class="premium-badge">Premium</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1606755456391-bad8c4fb1d1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pigeon with medal">
+                <div class="gallery-overlay">
+                    <h3>Victory Celebration</h3>
+                    <p>2023 National Champion</p>
+                </div>
+            </div>
+            <div class="gallery-item premium-gallery">
+                <img src="https://images.unsplash.com/photo-1606755456206-b25206b30b15?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pigeon training">
+                <div class="gallery-overlay">
+                    <h3>Training Session</h3>
+                    <p>Pre-race conditioning</p>
+                </div>
+                <div class="premium-badge">Premium</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>About Thanu Loft</h3>
+                <p>Specializing in championship homing pigeons since 2018. Our club has produced multiple national champions with exceptional return rates and speed.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="https://youtube.com/@thanuloft?si=Xl6bIEW1lXIGpfwn"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#stats"><i class="fas fa-chevron-right"></i> Statistics</a></li>
+                    <li><a href="#results"><i class="fas fa-chevron-right"></i> Race Results</a></li>
+                    <li><a href="#resources"><i class="fas fa-chevron-right"></i> Resources</a></li>
+                    <li><a href="#premium"><i class="fas fa-chevron-right"></i> Premium</a></li>
+                    <li><a href="#gallery"><i class="fas fa-chevron-right"></i> Gallery</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Breeding Guide</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Training Schedule</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Nutrition Plan</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Race Calendar</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Newsletter</h3>
+                <p>Subscribe to receive updates on race results, breeding news, and exclusive offers.</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Pigeon Masters Club. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--accent);"></i> for pigeon enthusiasts</p>
+        </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Contact Us</h3>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="contactName">Your Name</label>
+                    <input type="text" id="contactName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Email Address</label>
+                    <input type="email" id="contactEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactSubject">Subject</label>
+                    <input type="text" id="contactSubject" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Message</label>
+                    <textarea id="contactMessage" rows="5" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-accent btn-block">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Premium Required Modal -->
+    <div class="modal" id="premiumModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Premium Content</h3>
+            <p>This content is only available to premium members. Subscribe to unlock all premium features.</p>
+            <button class="btn btn-accent btn-block" id="goPremiumBtn">Get Premium Access</button>
+        </div>
+    </div>
+
+    <script>
+        
+        // --- 1. Firebase Configuration --- //
+       const firebaseConfig = {
+  apiKey: "AIzaSyA4PEt1Lpwn_hVrZJ6j6AlBKciMS90BojY",
+  authDomain: "thanu-loft-app.firebaseapp.com",
+  projectId: "thanu-loft-app",
+  storageBucket: "thanu-loft-app.firebasestorage.app",
+  messagingSenderId: "313594645628",
+  appId: "1:313594645628:web:92ab3879121ca9092d0df9",
+  measurementId: "G-RDBTYCJRKC"
+};
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Reference to the users collection
+        const usersRef = db.collection("users");
+
+        // Current user state
+        let currentUser = null;
+        let isPremiumUser = false;
+
+        // --- 2. Authentication Functions --- //
+        function initAuth() {
+            // Google Sign-In
+            document.getElementById("loginBtn").addEventListener("click", () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider)
+                    .then(result => {
+                        currentUser = result.user;
+                        checkPremiumStatus();
+                        updateUI();
+                    })
+                    .catch(error => {
+                        console.error("Login error:", error);
+                        alert("Login failed: " + error.message);
+                    });
+            });
+
+            // Register button (same as login for now)
+            document.getElementById("registerBtn").addEventListener("click", () => {
+                document.getElementById("loginBtn").click();
+            });
+
+            // Auth state listener
+            auth.onAuthStateChanged(user => {
+                currentUser = user;
+                if (user) {
+                    checkPremiumStatus();
+                }
+                updateUI();
+            });
+        }
+
+        // --- 3. Premium Status Check --- //
+        function checkPremiumStatus() {
+            if (!currentUser) return;
+            
+            usersRef.doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        isPremiumUser = doc.data().premium === true;
+                        const premiumExpiry = doc.data().premiumExpiry;
+                        
+                        // Check if premium subscription is still valid
+                        if (premiumExpiry) {
+                            const now = new Date();
+                            const expiryDate = premiumExpiry.toDate();
+                            isPremiumUser = isPremiumUser && expiryDate > now;
+                        }
+                    } else {
+                        isPremiumUser = false;
+                    }
+                    updateUI();
+                    setupPremiumContent();
+                })
+                .catch(error => {
+                    console.error("Error checking premium status:", error);
+                    isPremiumUser = false;
+                });
+        }
+
+        // --- 4. Update UI Based on Auth State --- //
+        function updateUI() {
+            const authButtons = document.querySelector(".auth-buttons");
+            const userProfile = document.getElementById("userProfile");
+            const userName = document.getElementById("userName");
+            const userAvatar = document.getElementById("userAvatar");
+            const userPremium = document.getElementById("userPremium");
+            
+            if (currentUser) {
+                // User is logged in
+                authButtons.style.display = "none";
+                userProfile.style.display = "flex";
+                userName.textContent = currentUser.displayName || "User";
+                userAvatar.src = currentUser.photoURL || "https://via.placeholder.com/40";
+                
+                if (isPremiumUser) {
+                    userPremium.style.display = "block";
+                } else {
+                    userPremium.style.display = "none";
+                }
+            } else {
+                // User is not logged in
+                authButtons.style.display = "flex";
+                userProfile.style.display = "none";
+            }
+        }
+
+        // --- 5. Premium Content Access Control --- //
+        function setupPremiumContent() {
+            const premiumElements = document.querySelectorAll(".premium-resource, .premium-gallery, .premium-download");
+            
+            premiumElements.forEach(element => {
+                if (!isPremiumUser) {
+                    // Blur images for premium content
+                    if (element.querySelector("img")) {
+                        element.querySelector("img").style.filter = "blur(5px)";
+                    }
+                    
+                    // Add click handler to show premium modal
+                    element.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        document.getElementById("premiumModal").classList.add("active");
+                    });
+                    
+                    // Style download links differently
+                    if (element.classList.contains("premium-download")) {
+                        element.innerHTML = '<i class="fas fa-lock"></i> Premium';
+                        element.style.color = "#ff6b45";
+                    }
+                } else {
+                    // User is premium, remove restrictions
+                    if (element.querySelector("img")) {
+                        element.querySelector("img").style.filter = "none";
+                    }
+                    
+                    // Remove premium lock icons
+                    if (element.classList.contains("premium-download")) {
+                        const icon = element.querySelector("i");
+                        if (icon && icon.classList.contains("fa-lock")) {
+                            icon.classList.remove("fa-lock");
+                            icon.classList.add("fa-download");
+                            element.style.color = "";
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 6. Razorpay Payment Success Handler --- //
+        function handlePaymentSuccess(plan) {
+            if (!currentUser) return;
+            
+            let premiumExpiry = new Date();
+            if (plan === "monthly") {
+                premiumExpiry.setMonth(premiumExpiry.getMonth() + 1);
+            } else if (plan === "yearly") {
+                premiumExpiry.setFullYear(premiumExpiry.getFullYear() + 1);
+            }
+            
+            // Update user's premium status in Firestore
+            usersRef.doc(currentUser.uid).set({
+                premium: true,
+                premiumSince: new Date(),
+                premiumExpiry: premiumExpiry,
+                premiumPlan: plan
+            }, { merge: true })
+            .then(() => {
+                isPremiumUser = true;
+                updateUI();
+                setupPremiumContent();
+                alert("Thank you for subscribing! Premium access has been activated.");
+            })
+            .catch(error => {
+                console.error("Error updating premium status:", error);
+                alert("Payment was successful but there was an error activating your premium access. Please contact support.");
+            });
+        }
+
+        // --- 7. Modal and UI Functions --- //
+        function initModals() {
+            // Contact modal
+            document.getElementById("contactBtn").addEventListener("click", () => {
+                document.getElementById("contactModal").classList.add("active");
+            });
+            
+            // Premium modal
+            document.getElementById("goPremiumBtn").addEventListener("click", () => {
+                document.getElementById("premiumModal").classList.remove("active");
+                window.location.href = "#premium";
+            });
+            
+            document.getElementById("heroPremiumBtn").addEventListener("click", () => {
+                window.location.href = "#premium";
+            });
+            
+            // Close modals
+            document.querySelectorAll(".close-modal").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".modal").forEach(modal => {
+                        modal.classList.remove("active");
+                    });
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener("click", (e) => {
+                if (e.target.classList.contains("modal")) {
+                    e.target.classList.remove("active");
+                }
+            });
+        }
+
+        // --- 8. Tab Functionality --- //
+        function initTabs() {
+            const tabBtns = document.querySelectorAll(".tab-btn");
+            const tabContents = document.querySelectorAll(".tab-content");
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const tabId = btn.getAttribute("data-tab");
+                    
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(btn => btn.classList.remove("active"));
+                    tabContents.forEach(content => content.classList.remove("active"));
+                    
+                    // Add active class to clicked button and corresponding content
+                    btn.classList.add("active");
+                    document.getElementById(tabId).classList.add("active");
+                });
+            });
+        }
+
+        // --- 9. Form Submissions --- //
+        function initForms() {
+            // Contact form
+            document.getElementById("contactForm").addEventListener("submit", (e) => {
+                e.preventDefault();
+                alert("Thank you for your message! We will contact you soon.");
+                document.getElementById("contactModal").classList.remove("active");
+            });
+            
+            // Newsletter form
+            document.getElementById("newsletterForm").addEventListener("submit", (e) => {
+                e.preventDefault();
+                alert("Thank you for subscribing to our newsletter!");
+                e.target.reset();
+            });
+        }
+
+        // --- 10. Smooth Scrolling --- //
+        function initSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener("click", function(e) {
+                    if (this.getAttribute("href") === "#") return;
+                    
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute("href");
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            });
+        }
+
+        // --- 11. Initialize Everything --- //
+        document.addEventListener("DOMContentLoaded", () => {
+            initAuth();
+            initModals();
+            initTabs();
+            initForms();
+            initSmoothScrolling();
+            
+            // For demo purposes - simulate payment success
+            // In production, this would be handled by Razorpay webhook
+            window.handleRazorpaySuccess = function(plan) {
+                handlePaymentSuccess(plan);
+            };
+        });
+        // Razorpay Integration
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if Razorpay is loaded
+    if (typeof Razorpay === 'undefined') {
+        // Load Razorpay script dynamically if not already loaded
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = setupRazorpayButtons;
+        document.head.appendChild(script);
+    } else {
+        setupRazorpayButtons();
+    }
+
+    function setupRazorpayButtons() {
+        // Monthly Plan Button
+        document.getElementById('monthlyPlanBtn').addEventListener('click', function() {
+            if (!currentUser) {
+                alert('Please login first');
+                document.getElementById('loginBtn').click();
+                return;
+            }
+
+            const options = {
+                key: 'YOUR_RAZORPAY_KEY_ID', // Replace with your key
+                amount: 19900, // ₹199 in paise
+                currency: 'INR',
+                name: 'Pigeon Masters Club',
+                description: 'Monthly Premium Membership',
+                image: 'https://your-logo-url.com/logo.png',
+                order_id: '', // Leave empty for dynamic order creation
+                handler: function(response) {
+                    handlePaymentSuccess('monthly', response);
+                },
+                prefill: {
+                    name: currentUser.displayName || '',
+                    email: currentUser.email || '',
+                    contact: '' // Add if you collect phone numbers
+                },
+                notes: {
+                    userId: currentUser.uid,
+                    plan: 'monthly'
+                },
+                theme: {
+                    color: '#4a6fa5'
+                }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+        });
+
+        // Yearly Plan Button
+        document.getElementById('yearlyPlanBtn').addEventListener('click', function() {
+            if (!currentUser) {
+                alert('Please login first');
+                document.getElementById('loginBtn').click();
+                return;
+            }
+
+            const options = {
+                key: 'YOUR_RAZORPAY_KEY_ID', // Replace with your key
+                amount: 199900, // ₹1,999 in paise
+                currency: 'INR',
+                name: 'Pigeon Masters Club',
+                description: 'Yearly Premium Membership',
+                image: 'https://your-logo-url.com/logo.png',
+                order_id: '', // Leave empty for dynamic order creation
+                handler: function(response) {
+                    handlePaymentSuccess('yearly', response);
+                },
+                prefill: {
+                    name: currentUser.displayName || '',
+                    email: currentUser.email || '',
+                    contact: '' // Add if you collect phone numbers
+                },
+                notes: {
+                    userId: currentUser.uid,
+                    plan: 'yearly'
+                },
+                theme: {
+                    color: '#4a6fa5'
+                }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+        });
+    }
+
+    function handlePaymentSuccess(planType, response) {
+        // Here you would typically verify the payment with your backend
+        // For Firebase-only solution, we'll update Firestore directly
+        
+        if (!currentUser) return;
+        
+        const db = firebase.firestore();
+        const userRef = db.collection('users').doc(currentUser.uid);
+        
+        // Calculate expiry date
+        const now = new Date();
+        const expiryDate = new Date();
+        
+        if (planType === 'monthly') {
+            expiryDate.setMonth(now.getMonth() + 1);
+        } else {
+            expiryDate.setFullYear(now.getFullYear() + 1);
+        }
+        
+        // Update user document
+        userRef.set({
+            premium: true,
+            premiumType: planType,
+            premiumSince: firebase.firestore.FieldValue.serverTimestamp(),
+            premiumExpiry: expiryDate,
+            lastPayment: response.razorpay_payment_id
+        }, { merge: true })
+        .then(() => {
+            alert('Payment successful! Premium access activated.');
+            isPremiumUser = true;
+            updateUI();
+            setupPremiumContent();
+        })
+        .catch(error => {
+            console.error('Error updating premium status:', error);
+            alert('Payment was successful but there was an error activating your premium access. Please contact support.');
+        });
+    }
+});
+    </script>
+    
+</body>
+</html>
